@@ -26,6 +26,7 @@ let enemies = [];
 let explosions = [];
 let isGameOver = false;
 let score = 0;
+let enemyBullets = [];
 
 
 class Explosion {
@@ -71,6 +72,7 @@ document.addEventListener("keydown", (e) => {
       bullets = [];
       enemies = [];
       explosions = [];
+      enemyBullets = [];  // ← ここを追加
       score = 0;
       player.x = canvas.width / 2 - player.width / 2;
       player.y = canvas.height - 80;
@@ -91,6 +93,7 @@ function drawBackground() {
 function update() {
   if (isGameOver) return; // ゲームオーバー時は更新停止
 
+  enemyFire(); // 敵が発射する
 
   bgY += 2;
   if (bgY >= canvas.height) bgY = 0;
@@ -116,6 +119,10 @@ function update() {
     }
   }
 
+
+  // 敵弾を下方向に移動
+  enemyBullets.forEach(b => b.y += 5);
+
   // 敵とプレイヤーの当たり判定（ゲームオーバー）
   for (let i = 0; i < enemies.length; i++) {
     const e = enemies[i];
@@ -133,7 +140,40 @@ function update() {
 
       break;
     }
+
+
+
+  // 敵弾とプレイヤーの当たり判定
+  for (let i = 0; i < enemyBullets.length; i++) {
+    const b = enemyBullets[i];
+    if (
+        player.x < b.x + 4 &&
+        player.x + player.width > b.x &&
+        player.y < b.y + 10 &&
+        player.y + player.height > b.y
+    ) {
+      explosions.push(new Explosion(player.x + player.width / 2, player.y + player.height / 2));
+      isGameOver = true;
+      break;
+    }
   }
+
+  }
+
+  for (let i = 0; i < enemyBullets.length; i++) {
+    const b = enemyBullets[i];
+    if (
+      player.x < b.x + 4 &&
+      player.x + player.width > b.x &&
+      player.y < b.y + 10 &&
+      player.y + player.height > b.y
+    ) {
+      explosions.push(new Explosion(player.x + player.width / 2, player.y + player.height / 2));
+      isGameOver = true;
+      break;
+    }
+  }
+
   // 爆発が終了したら削除
   explosions = explosions.filter(ex => !ex.finished);
 }
@@ -167,6 +207,15 @@ canvas.addEventListener("touchstart", handleTouch, { passive: false });
 canvas.addEventListener("touchmove", handleTouch, { passive: false });
 
 
+function enemyFire() {
+  enemies.forEach(e => {
+    if (Math.random() < 0.005) { // 2%の確率で発射
+      enemyBullets.push({ x: e.x + 10, y: e.y + 20 });
+    }
+  });
+}
+
+
 function draw() {
   drawBackground();
 
@@ -183,6 +232,9 @@ function draw() {
   // 敵
   ctx.fillStyle = "white";
   enemies.forEach(e => ctx.fillRect(e.x, e.y, 20, 20));
+
+  ctx.fillStyle = "orange";
+  enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 10));
 
   // 爆発
   explosions.forEach(ex => ex.draw(ctx));
