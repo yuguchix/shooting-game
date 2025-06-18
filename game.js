@@ -107,6 +107,25 @@ function update() {
   explosions = explosions.filter(ex => !ex.finished);
 }
 
+canvas.addEventListener("touchstart", handleTouch);
+canvas.addEventListener("touchmove", handleTouch);
+
+function handleTouch(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const x = touch.clientX - rect.left;
+  player.x = x - player.width / 2;
+}
+
+setInterval(() => {
+  if (!isGameOver) {
+    bullets.push({ x: player.x + 8, y: player.y });
+  }
+}, 300); // 300ミリ秒ごとに自動発射
+
+
+
 function draw() {
   drawBackground();
 
