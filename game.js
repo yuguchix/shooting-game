@@ -189,9 +189,9 @@ function draw() {
 
   // ✅ スコアは常に表示
   ctx.fillStyle = "white";
-  ctx.font = "20px sans-serif";
+  ctx.font = "30px sans-serif";
   ctx.textAlign = "left";
-  ctx.fillText(`SCORE: ${score}`, 10, 30);
+  ctx.fillText(`SCORE: ${score}`, 50, 40);
 
   // ゲームオーバー画面
   if (isGameOver) {
