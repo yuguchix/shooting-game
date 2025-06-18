@@ -170,19 +170,30 @@ canvas.addEventListener("touchmove", handleTouch, { passive: false });
 function draw() {
   drawBackground();
 
+  // 自機（ゲーム中のみ表示）
   if (!isGameOver) {
     ctx.fillStyle = "lime";
     ctx.fillRect(player.x, player.y, player.width, player.height);
   }
 
+  // 弾
   ctx.fillStyle = "red";
   bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 10));
 
+  // 敵
   ctx.fillStyle = "white";
   enemies.forEach(e => ctx.fillRect(e.x, e.y, 20, 20));
 
+  // 爆発
   explosions.forEach(ex => ex.draw(ctx));
 
+  // ✅ スコアは常に表示
+  ctx.fillStyle = "white";
+  ctx.font = "20px sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText(`SCORE: ${score}`, 10, 30);
+
+  // ゲームオーバー画面
   if (isGameOver) {
     ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -194,14 +205,15 @@ function draw() {
 
     ctx.font = "24px sans-serif";
     ctx.fillStyle = "white";
-    ctx.fillText("[Ctr + R]キーで再スタート", canvas.width / 2, canvas.height / 2 + 30);
+    ctx.fillText("[R]キーで再スタート", canvas.width / 2, canvas.height / 2 + 30);
 
-    ctx.fillStyle = "white";
-    ctx.font = "20px sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText(`SCORE: ${score}`, 10, 30);
+    // ゲームオーバー時にも中央にスコア表示（目立つように）
+    ctx.font = "24px sans-serif";
+    ctx.fillStyle = "yellow";
+    ctx.fillText(`SCORE: ${score}`, canvas.width / 2, canvas.height / 2 + 70);
   }
 }
+
 
 
 function gameLoop() {
