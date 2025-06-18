@@ -1,3 +1,15 @@
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  // プレイヤーの初期位置もリセット（中央下）
+  player.x = canvas.width / 2 - player.width / 2;
+  player.y = canvas.height - 80;
+}
+window.addEventListener("load", resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
+
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -118,12 +130,22 @@ function handleTouch(e) {
   player.x = x - player.width / 2;
 }
 
+
 setInterval(() => {
   if (!isGameOver) {
     bullets.push({ x: player.x + 8, y: player.y });
   }
 }, 300); // 300ミリ秒ごとに自動発射
 
+function handleTouch(e) {
+  e.preventDefault(); // スクロールを防止
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const x = (touch.clientX - rect.left) * (canvas.width / rect.width); // ← スケーリング補正
+  player.x = x - player.width / 2;
+}
+canvas.addEventListener("touchstart", handleTouch, { passive: false });
+canvas.addEventListener("touchmove", handleTouch, { passive: false });
 
 
 function draw() {
