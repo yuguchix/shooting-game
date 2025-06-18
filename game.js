@@ -25,6 +25,7 @@ let bullets = [];
 let enemies = [];
 let explosions = [];
 let isGameOver = false;
+let score = 0;
 
 
 class Explosion {
@@ -57,10 +58,23 @@ class Explosion {
 }
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowLeft") player.x -= 10;
-  if (e.key === "ArrowRight") player.x += 10;
-  if (e.key === " ") {
-    bullets.push({ x: player.x + 8, y: player.y });
+  if (!isGameOver) {
+    if (e.key === "ArrowLeft") player.x -= 10;
+    if (e.key === "ArrowRight") player.x += 10;
+    if (e.key === " ") {
+      bullets.push({ x: player.x + 8, y: player.y });
+    }
+  } else {
+    if (e.key.toLowerCase() === "r") {
+      // ★ ゲームリスタート処理
+      isGameOver = false;
+      bullets = [];
+      enemies = [];
+      explosions = [];
+      score = 0;
+      player.x = canvas.width / 2 - player.width / 2;
+      player.y = canvas.height - 80;
+    }
   }
 });
 
@@ -96,6 +110,7 @@ function update() {
         explosions.push(new Explosion(e.x + 10, e.y + 10));
         bullets.splice(i, 1);
         enemies.splice(j, 1);
+        score += 100;  // ★ スコア加算
         break;
       }
     }
@@ -112,6 +127,10 @@ function update() {
     ) {
       explosions.push(new Explosion(player.x + player.width / 2, player.y + player.height / 2));
       isGameOver = true;
+      ctx.font = "24px sans-serif";
+      ctx.fillStyle = "yellow";
+      ctx.fillText(`SCORE: ${score}`, canvas.width / 2, canvas.height / 2 + 70);
+
       break;
     }
   }
@@ -176,6 +195,11 @@ function draw() {
     ctx.font = "24px sans-serif";
     ctx.fillStyle = "white";
     ctx.fillText("[Ctr + R]キーで再スタート", canvas.width / 2, canvas.height / 2 + 30);
+
+    ctx.fillStyle = "white";
+    ctx.font = "20px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`SCORE: ${score}`, 10, 30);
   }
 }
 
